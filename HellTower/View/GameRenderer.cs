@@ -332,7 +332,7 @@ namespace HellTower.View
             Brushes.White,
             20, 215);
 
-        if (_world.IsGameOver)
+            if (_world.IsGameOver)
             {
                 string gameOverText = "GAME OVER";
                 var gameOverFont = new Font("Stencil", 48, FontStyle.Bold);

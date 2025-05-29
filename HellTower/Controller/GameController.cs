@@ -16,6 +16,7 @@ namespace HellTower.Controller
         private readonly WindowGenerator _windowGenerator;
         private readonly BatSpawner _batSpawner;
         private readonly SkeletonSpawner _skeletonSpawner;
+        private readonly Audio.SoundManager _soundManager;
         public bool IsGameRunning { get; private set; }
         public bool IsGameOver => _world.IsGameOver;
 
@@ -23,11 +24,12 @@ namespace HellTower.Controller
         {
             _world = new GameWorld();
             _renderer = new GameRenderer(_world);
-            _inputHandler = new InputHandler(_world);
+            _inputHandler = new InputHandler(_world, new Audio.SoundManager("Resources/Audio"));
             _platformGenerator = new PlatformGenerator(_world);
             _windowGenerator = new WindowGenerator(_world);
             _batSpawner = new BatSpawner(_world);
             _skeletonSpawner = new SkeletonSpawner(_world);
+            _soundManager = new Audio.SoundManager("Resources/Audio");
         }
 
         public void ResetGame()
@@ -88,5 +90,14 @@ namespace HellTower.Controller
             if (!_world.IsGameOver)
                 _inputHandler.RemovePressedKey(e.KeyCode);
         }
+
+        public void PlayMenuMusic() => _soundManager.PlayMusic("menu_music.mp3");
+        public void PlayGameMusic() => _soundManager.PlayMusic("game_music.mp3");
+        public void PauseGameMusic() => _soundManager.PauseMusic();
+        public void ResumeGameMusic() => _soundManager.ResumeMusic();
+        public void StopMusic() => _soundManager.StopMusic();
+        public void SetMusicVolume(float v) => _soundManager.SetMusicVolume(v);
+        public void SetEffectsVolume(float v) => _soundManager.SetEffectsVolume(v);
+        public void PlayEffect(string effect) => _soundManager.PlayEffect(effect);
     }
 }

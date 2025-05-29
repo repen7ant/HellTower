@@ -19,33 +19,48 @@ namespace HellTower.View
             pauseMenu = new PauseMenu();
             optionsMenu = new OptionsMenu();
 
+            optionsMenu.MusicVolumeChanged += v => _controller.SetMusicVolume(v);
+            optionsMenu.EffectsVolumeChanged += v => _controller.SetEffectsVolume(v);
+
+
             mainMenu.buttons[0].Action = () =>
             {
                 currentState = GameState.Playing;
                 _controller.StartGame();
+                _controller.StopMusic();
+                _controller.PlayGameMusic();
             };
             mainMenu.buttons[1].Action = () =>
             {
                 currentState = GameState.Options;
                 Cursor.Show();
+                optionsMenu.AddControlsToForm(this);
             };
             mainMenu.buttons[2].Action = () => this.Close();
 
-            pauseMenu.buttons[0].Action = () => currentState = GameState.Playing;
-            pauseMenu.buttons[1].Action = () =>
+            pauseMenu.buttons[0].Action = () =>
+            {
+                currentState = GameState.Playing;
+                _controller.ResumeGameMusic();
+            };
+                pauseMenu.buttons[1].Action = () =>
             {
                 currentState = GameState.Options;
                 Cursor.Show();
+                optionsMenu.AddControlsToForm(this);
             };
             pauseMenu.buttons[2].Action = () =>
             {
                 currentState = GameState.MainMenu;
                 pauseMenu.SetFirstSelected();
                 _controller.ResetGame();
+                _controller.StopMusic();
+                _controller.PlayMenuMusic();
             };
 
             optionsMenu.buttons[0].Action = () =>
             {
+                optionsMenu.RemoveControlsFromForm(this);
                 if (_controller.IsGameRunning)
                     currentState = GameState.Paused;
                 else
@@ -54,6 +69,7 @@ namespace HellTower.View
             };
 
             InitializeForm();
+            _controller.PlayMenuMusic();
         }
 
         private void InitializeForm()
@@ -146,6 +162,7 @@ namespace HellTower.View
             if (e.KeyCode == Keys.Escape && !_controller.IsGameOver)
             {
                 currentState = GameState.Paused;
+                _controller.PauseGameMusic();
                 _controller.ResetPressedKeys();
             }
             else if (_controller.IsGameOver && e.KeyCode == Keys.Enter)
@@ -153,6 +170,8 @@ namespace HellTower.View
                 currentState = GameState.MainMenu;
                 pauseMenu.SetFirstSelected();
                 _controller.ResetGame();
+                _controller.StopMusic();
+                _controller.PlayMenuMusic();
             }   
             else
                 _controller.OnKeyDown(this, e);
@@ -176,6 +195,7 @@ namespace HellTower.View
                     break;
                 case Keys.Escape:
                     currentState = GameState.Playing;
+                    _controller.ResumeGameMusic();
                     break;
             }
         }
@@ -189,13 +209,13 @@ namespace HellTower.View
                     optionsMenu.ExecuteSelected();
                     break;
                 case Keys.Escape:
+                    optionsMenu.RemoveControlsFromForm(this);
                     if (_controller.IsGameRunning)
                         currentState = GameState.Paused;
                     else
                         currentState = GameState.MainMenu;
                     Cursor.Hide();
                     break;
-                    //добавить настройку звука
             }
         }
     }

@@ -1,17 +1,79 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace HellTower.View
 {
     public class OptionsMenu : Menu
     {
+        private Slider musicSlider;
+        private Slider effectsSlider;
+        private Label musicLabel;
+        private Label effectsLabel;
+
+        public float MusicVolume => musicSlider.Value / 100f;
+        public float EffectsVolume => effectsSlider.Value / 100f;
+
+        public event Action<float> MusicVolumeChanged;
+        public event Action<float> EffectsVolumeChanged;
+
         public OptionsMenu() : base("Resources/Images/Background/menu_background.png")
         {
             buttons.Add(new MenuButton("Back", Rectangle.Empty, null));
+
+            musicSlider = new Slider { Minimum = 0, Maximum = 100, Value = 100, Width = 300, Height = 30 };
+            effectsSlider = new Slider { Minimum = 0, Maximum = 100, Value = 100, Width = 300, Height = 30 };
+
+            musicLabel = new Label
+            {
+                Text = "Music Volume",
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Font = new Font("Stencil", 18, FontStyle.Bold),
+                AutoSize = true
+            };
+            effectsLabel = new Label
+            {
+                Text = "Effects Volume",
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Font = new Font("Stencil", 18, FontStyle.Bold),
+                AutoSize = true
+            };
+
+            musicSlider.ValueChanged += (v) => MusicVolumeChanged?.Invoke(MusicVolume);
+            effectsSlider.ValueChanged += (v) => EffectsVolumeChanged?.Invoke(EffectsVolume);
+        }
+
+        public void AddControlsToForm(Form form)
+        {
+            if (!form.Controls.Contains(musicSlider))
+            {
+                int screenWidth = form.Width;
+                int screenHeight = form.Height;
+
+                musicSlider.Location = new Point((screenWidth - musicSlider.Width) / 2, screenHeight / 2 + 100);
+                musicLabel.Location = new Point(musicSlider.Left, musicSlider.Top - 35);
+
+                effectsSlider.Location = new Point((screenWidth - effectsSlider.Width) / 2, screenHeight / 2 + 190);
+                effectsLabel.Location = new Point(effectsSlider.Left, effectsSlider.Top - 35);
+
+                form.Controls.Add(musicSlider);
+                form.Controls.Add(musicLabel);
+                form.Controls.Add(effectsSlider);
+                form.Controls.Add(effectsLabel);
+            }
+        }
+
+        public void RemoveControlsFromForm(Form form)
+        {
+            if (form.Controls.Contains(musicSlider))
+            {
+                form.Controls.Remove(musicSlider);
+                form.Controls.Remove(musicLabel);
+                form.Controls.Remove(effectsSlider);
+                form.Controls.Remove(effectsLabel);
+            }
         }
 
         public override void Draw(Graphics g, int screenWidth, int screenHeight)
@@ -47,9 +109,7 @@ namespace HellTower.View
                                  "Select: Enter or Space\n" +
                                  "Pause: Esc";
 
-            g.DrawString(controlsText, controlsFont, Brushes.White, (screenWidth - g.MeasureString("CONTROLS:", controlsFont).Width) / 2, 200);
-
-            // Here you would add volume slider logic
+            g.DrawString(controlsText, controlsFont, Brushes.White, (screenWidth - g.MeasureString("CONTROLS:", controlsFont).Width) / 2 - 80, 200);
         }
     }
 }

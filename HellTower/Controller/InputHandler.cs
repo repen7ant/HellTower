@@ -11,10 +11,12 @@ namespace HellTower.Controller
         private readonly HashSet<Keys> _pressedKeys = new HashSet<Keys>();
         private bool _wasLeftPressed;
         private bool _wasRightPressed;
+        private readonly Audio.SoundManager _soundManager;
 
-        public InputHandler(GameWorld world)
+        public InputHandler(GameWorld world, Audio.SoundManager soundManager)
         {
             _world = world;
+            _soundManager = soundManager;
         }
 
         public void ResetPressedKeys() => _pressedKeys.Clear();
@@ -52,6 +54,7 @@ namespace HellTower.Controller
             {
                 var direction = _world.Player.IsFacingRight ? 1 : -1;
                 _world.Player.Dash(direction);
+                _soundManager.PlayEffect("dash_sound.wav");
             }
 
             if (_pressedKeys.Contains(Keys.S))
@@ -59,11 +62,16 @@ namespace HellTower.Controller
 
             if (_pressedKeys.Contains(Keys.ControlKey))
                 _world.Player.StartHealing();
+
             else if (_world.Player.IsHealing)
                 _world.Player.InterruptHealing();
 
+            if (_world.Player.IsInvincible && _world.Player.invincibilityTimer == GameSettings.InvincibilityDuration)
+                _soundManager.PlayEffect("damage_sound.wav");
+
             if (_pressedKeys.Contains(Keys.J) && !_world.Player.IsAttacking)
             {
+                _soundManager.PlayEffect("attack_sound.wav");
                 AttackDirection direction;
                 if (_pressedKeys.Contains(Keys.W))
                     direction = AttackDirection.Up;
@@ -86,6 +94,7 @@ namespace HellTower.Controller
             if (_pressedKeys.Contains(Keys.K) && _world.Player.CanUseEnergyAttack &&
                     !_world.Player.IsKnockback)
             {
+                _soundManager.PlayEffect("energy_attack_sound.wav");
                 _world.Player.Energy -= 20;
                 _world.Player.EnergyAttackCooldownTimer = 0.25f; 
                 var energyAttack = new EnergyAttack
