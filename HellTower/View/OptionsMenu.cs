@@ -104,7 +104,8 @@ namespace HellTower.View
                                  "Drop Down: S\n" +
                                  "Dash: Shift\n" +
                                  "Attack: J\n" +
-                                 "Heal: Ctrl\n" +
+                                 "Energy Attack: K (20 energy)\n" +
+                                 "Heal: Hold Ctrl (40 energy)\n" +
                                  "Menu Navigation: W/S or Arrows\n" +
                                  "Select: Enter or Space\n" +
                                  "Pause: Esc";
