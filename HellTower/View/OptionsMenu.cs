@@ -99,7 +99,7 @@ namespace HellTower.View
             var controlsFont = new Font("Stencil", 18, FontStyle.Bold);
             string controlsText = "CONTROLS:\n\n" +
                                  "Move Left: A\n" +
-                                 "Move Right: Dw\n" +
+                                 "Move Right: D\n" +
                                  "Jump: Space\n" +
                                  "Drop Down: S\n" +
                                  "Dash: Shift\n" +
